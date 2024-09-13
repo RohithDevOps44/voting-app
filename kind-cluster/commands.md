@@ -10,31 +10,21 @@
 
 - Create a 3-node Kubernetes cluster using Kind:
   ```bash
-  kind create cluster --config=config.yml
+  kind create cluster --config kind-config.yaml --name voting-app
   ```
 
 - Check cluster information:
   ```bash
   kubectl cluster-info --context kind-kind
+
   kubectl get nodes
+
   kind get clusters
   ```
 
 ---
 
-## 2. Installing kubectl
-
-- Download `kubectl` for managing Kubernetes clusters:
-  ```bash
-  curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
-  chmod +x ./kubectl
-  sudo mv ./kubectl /usr/local/bin
-  kubectl version --short --client
-  ```
-
----
-
-## 3. Managing Docker and Kubernetes Pods
+## 2. Managing Docker and Kubernetes Pods
 
 - Check Docker containers running:
   ```bash
@@ -48,16 +38,18 @@
 
 ---
 
-## 4. Cloning and Running the Example Voting App
+## 3. Cloning and Running the Example Voting App
 
 - Clone the voting app repository:
   ```bash
   git clone https://github.com/dockersamples/example-voting-app.git
+  
   cd example-voting-app/
   ```
 
 - Apply Kubernetes YAML specifications for the voting app:
   ```bash
+
   kubectl apply -f k8s-specifications/
   ```
 
@@ -68,26 +60,12 @@
 
 - Forward local ports for accessing the voting and result apps:
   ```bash
-  kubectl port-forward service/vote 5000:5000 --address=0.0.0.0 &
-  kubectl port-forward service/result 5001:5001 --address=0.0.0.0 &
+  kubectl port-forward -n voting-app svc/vote 5000:5000 --address 0.0.0.0 &
+  kubectl port-forward -n voting-app svc/result 5001:5001 --address 0.0.0.0 &
   ```
 
 ---
-
-## 5. Managing Files in Example Voting App
-
-- Navigate and view files:
-  ```bash
-  cd ..
-  cd seed-data/
-  ls
-  cat Dockerfile
-  cat generate-votes.sh
-  ```
-
----
-
-## 6. Installing Argo CD
+## 4. Installing Argo CD
 
 - Create a namespace for Argo CD:
   ```bash
@@ -116,30 +94,16 @@
 
 ---
 
-## 7. Deleting Kubernetes Cluster
+## 5. Deleting Kubernetes Cluster
 
 - Delete the Kind cluster:
   ```bash
-  kind delete cluster --name=kind
+  kind delete clusters voting-app
   ```
 
 ---
 
-## 8. Installing Kubernetes Dashboard
-
-- Deploy Kubernetes dashboard:
-  ```bash
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
-  ```
-
-- Create a token for dashboard access:
-  ```bash
-  kubectl -n kubernetes-dashboard create token admin-user
-  ```
-
----
-
-## 9. Argo CD Initial Admin Password
+## 6. Argo CD Initial Admin Password
 
 - Retrieve Argo CD admin password:
   ```bash
@@ -149,7 +113,7 @@
 
 ---
 
-## 10. Install HELM
+## 7. Install HELM
 
 ```bash
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
@@ -159,7 +123,7 @@ chmod 700 get_helm.sh
 
 ---
 
-## 11. Install Kube Prometheus Stack
+## 8. Install Kube Prometheus Stack
 
 ```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
